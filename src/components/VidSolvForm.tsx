@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -11,6 +12,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, Search, Youtube, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { generateYoutubeQuery, type GenerateYoutubeQueryInput, type GenerateYoutubeQueryOutput } from '@/ai/flows/generate-youtube-query';
 import { cn } from '@/lib/utils';
+import { Slider } from "@/components/ui/slider"; // Added Slider import
+import { Label } from "@/components/ui/label"; // Added Label import
 
 const formSchema = z.object({
   problemDescription: z.string().min(10, { message: 'Please describe your problem in at least 10 characters.' }).max(300, {message: 'Problem description is too long (max 300 characters).'}),
@@ -169,8 +172,23 @@ export function VidSolvForm() {
               <Youtube className="mr-2 h-6 w-6" />
               Watch on YouTube
             </a>
+            <div className="mt-6 pt-4 border-t border-border">
+              <Label htmlFor="suggestion-slider" className="text-sm text-muted-foreground mb-2 block">Suggestion Feedback (Coming Soon)</Label>
+              <Slider
+                id="suggestion-slider"
+                defaultValue={[50]}
+                max={100}
+                step={1}
+                className="w-[80%] mx-auto"
+                aria-label="Suggestion feedback slider (currently non-functional)"
+                disabled // Keep it disabled if non-functional for now
+              />
+               <p className="text-xs text-muted-foreground mt-2">
+                This slider will allow you to provide feedback in the future.
+              </p>
+            </div>
           </CardContent>
-           <CardFooter className="justify-center">
+           <CardFooter className="justify-center pt-4">
             <Button variant="ghost" onClick={handleReset} className="text-muted-foreground hover:text-primary">
               Search for another problem
             </Button>

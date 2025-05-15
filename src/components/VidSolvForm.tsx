@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -12,8 +12,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, Search, Youtube, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { generateYoutubeQuery, type GenerateYoutubeQueryInput, type GenerateYoutubeQueryOutput } from '@/ai/flows/generate-youtube-query';
 import { cn } from '@/lib/utils';
-import { Slider } from "@/components/ui/slider"; // Added Slider import
-import { Label } from "@/components/ui/label"; // Added Label import
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   problemDescription: z.string().min(10, { message: 'Please describe your problem in at least 10 characters.' }).max(300, {message: 'Problem description is too long (max 300 characters).'}),
@@ -33,6 +33,7 @@ export function VidSolvForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchResult, setSearchResult] = useState<GenerateYoutubeQueryOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const resultCardRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -64,9 +65,15 @@ export function VidSolvForm() {
     }
   };
 
+  useEffect(() => {
+    if (searchResult && resultCardRef.current) {
+      resultCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [searchResult]);
+
   const handleSampleProblemClick = (problem: string) => {
     setValue('problemDescription', problem, { shouldValidate: true });
-    setSearchResult(null); // Clear previous results when a sample is clicked
+    setSearchResult(null); 
     setError(null);
   };
   
@@ -150,7 +157,7 @@ export function VidSolvForm() {
       )}
 
       {searchResult && !isLoading && (
-        <Card className="text-center shadow-xl animate-in fade-in-50 duration-500">
+        <Card ref={resultCardRef} className="text-center shadow-xl animate-in fade-in-50 duration-500">
           <CardHeader>
             <div className="mx-auto bg-green-100 dark:bg-green-900 rounded-full p-2 w-fit mb-2">
               <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
@@ -181,7 +188,7 @@ export function VidSolvForm() {
                 step={1}
                 className="w-[80%] mx-auto"
                 aria-label="Suggestion feedback slider (currently non-functional)"
-                disabled // Keep it disabled if non-functional for now
+                disabled 
               />
                <p className="text-xs text-muted-foreground mt-2">
                 This slider will allow you to provide feedback in the future.

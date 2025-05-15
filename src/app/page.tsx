@@ -1,7 +1,21 @@
+
+'use client'; // Ensure this is at the top if not already for page (though for page.tsx it's often a Server Component by default, children can be client)
+                // However, using hooks like useState/useEffect necessitates 'use client' for the component itself.
+                // Since page.tsx is the entry, if it needs client-side interactivity for the year, it should be 'use client'.
+                // Or, the footer part could be a separate client component.
+                // For this specific fix, making the Page component a client component is the most straightforward.
+
+import { useState, useEffect } from 'react';
 import { VidSolvForm } from '@/components/VidSolvForm';
-import { Lightbulb } from 'lucide-react'; // Example icon
+import { Lightbulb } from 'lucide-react';
 
 export default function Home() {
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-4 selection:bg-primary/20 selection:text-primary">
       <header className="my-8 md:my-12 text-center">
@@ -22,7 +36,12 @@ export default function Home() {
 
       <footer className="mt-12 mb-6 text-center text-sm text-muted-foreground">
         <p>Know the problem. We know what to search.</p>
-        <p className="mt-1">&copy; {new Date().getFullYear()} VidSolv. All rights reserved.</p>
+        {currentYear !== null && (
+          <p className="mt-1">&copy; {currentYear} VidSolv. All rights reserved.</p>
+        )}
+        {currentYear === null && (
+          <p className="mt-1">&copy; VidSolv. All rights reserved.</p> // Fallback or placeholder
+        )}
       </footer>
     </div>
   );
